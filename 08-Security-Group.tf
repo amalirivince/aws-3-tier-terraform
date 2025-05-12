@@ -1,7 +1,7 @@
 # This file contains the security group configuration for the VPC.
   #PUBLIC SUBNET SECURITY GROUP
 resource "aws_security_group" "Cloudqueror_SG" {
-  name        = "my-sg"
+  name        = "Cloudqueror_SG"
   description = "Allow TLS, SSH, HTTP, and custom ports inbound traffic and all outbound traffic"
   vpc_id      = aws_vpc.Cloudqueror_VPC.id
   tags = {
@@ -9,7 +9,7 @@ resource "aws_security_group" "Cloudqueror_SG" {
   }
 
   ingress {
-    description = "Allow HTTPSfrom anywhere"
+    description = "Allow HTTPS from anywhere"
     from_port   = 443
     to_port     = 443
     cidr_blocks = ["0.0.0.0/0"]
@@ -57,27 +57,27 @@ resource "aws_security_group" "Cloudqueror_SG" {
 }
 
 # RDS Security Group
-# resource "aws_security_group" "rds_sg" {
-  # name        = "rds-sg"
-  # description = "Allow MySQL from EC2"
-  # vpc_id      = aws_vpc.four-tier-arch-vpc.id
-# 
-  # ingress {
-    # from_port       = 3306
-    # to_port         = 3306
-    # protocol        = "tcp"
-    # security_groups = [aws_security_group.my-sg.id]
-  # }
-# 
-  # egress {
-    # from_port   = 0
-    # to_port     = 0
-    # protocol    = "-1"
-    # cidr_blocks = ["0.0.0.0/0"]
-    # security_groups = [aws_security_group.my-sg.id]
-  # }
-# 
-  # tags = {
-    # Name = "RDS-Security-Group"
-  # }
-# }
+resource "aws_security_group" "rds_sg" {
+  name        = "rds-sg"
+  description = "Allow MySQL from EC2"
+  vpc_id      = aws_vpc.Cloudqueror_VPC.id
+
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.Cloudqueror_SG.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.Cloudqueror_SG.id]
+  }
+
+  tags = {
+    Name = "RDS-Security-Group"
+  }
+}
